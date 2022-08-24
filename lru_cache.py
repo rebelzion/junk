@@ -3,7 +3,8 @@ LRU Cache:
 O(1) lookup
 O(1) insert
 
-TODO: implement remove operation.
+[] implement remove operation.
+[] implement the arguments of LRUCache so positional arguments can be used too.
 """
 
 import time
@@ -40,7 +41,7 @@ class _LRUCache:
                 key, _ = self._remove_last_node()
                 del self.cache[key]
 
-            # add the node to the front of the list    
+            # add the node to the front of the list
             result = self.func(*args, **kwargs)
             node = self._Node(key=args, value=result)
             self.cache[args] = node
@@ -48,7 +49,7 @@ class _LRUCache:
 
         print(self)
         return result
-    
+
     def _move_node_to_head(self, node):
         if node == self.lru_list and node == self.lru_last:
             return
@@ -81,7 +82,7 @@ class _LRUCache:
 
 
     def __repr__(self) -> str:
-        
+
         repr = ""
 
         node = self.lru_list
