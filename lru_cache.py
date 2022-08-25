@@ -2,9 +2,6 @@
 LRU Cache:
 O(1) lookup
 O(1) insert
-
-[] implement remove operation.
-[] implement the arguments of LRUCache so positional arguments can be used too.
 """
 
 import time
