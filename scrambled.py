@@ -1,5 +1,5 @@
 """
-Funny problem :) Read the statement first and try solving the problem yourself before looking at the solution.
+Funny problem :) Read the statement first and try solving it yourself before looking at the solution.
 
 Problem Statement:
 ---
