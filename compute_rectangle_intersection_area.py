@@ -1,3 +1,9 @@
+"""
+Compute area of intersection between two axis aligned rectangles.
+This operation is used a lot in Object Detection and Tracking.
+It's implemented in many well known libraries, but it's a good exercise to implement it yourself.
+"""
+
 import doctest
 from dataclasses import dataclass
 import cv2 as cv
