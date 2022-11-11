@@ -1,9 +1,9 @@
 """
-Funny problem :) Read first the statement and try it yourself before looking at the solution.
+Funny problem :) Read the statement first and try solving the problem yourself before looking at the solution.
 
 Problem Statement:
 ---
-Given a string of digits spelled out as words and possible scrambled,
+Given a string of digits spelled out as words and possibly scrambled,
 return a string containing the numerical values of the digits in increasingly sorted order.
 
 Examples:
