@@ -62,6 +62,35 @@ def fill_polygon(t: turtle.Turtle, xs: List[int], ys: List[int], color: str = 'r
     t.end_fill()
 
 
+def generate_random_convex_polygon_on_circle(radius: float, n: int) -> Tuple[List[float], List[float]]:
+
+
+    degs = [np.random.randint(0, 360) for _ in range(n)]
+    degs = sorted(degs)
+
+    xs = []
+    ys = []
+
+    for deg in degs:
+
+        x,y = polar2cart(radius=radius, theta=np.radians(deg))
+        xs.append(x)
+        ys.append(y)
+    return xs, ys
+
+
+
+def write_text_at(turtle: turtle.Turtle, x: float, y: float, text: str):
+
+
+    px, py = turtle.position()
+    turtle.penup()
+    turtle.setposition(x, y)
+    turtle.write(text, move=False, font=('Arial', 16, 'bold'))
+
+    turtle.setposition(px, py)
+
+
 def generate_random_convex_polygon(
     npoints: int,
     sx: Optional[int] = None,
@@ -107,7 +136,12 @@ def generate_random_convex_polygon(
 
     return xs,ys
 
-xs, ys = generate_random_convex_polygon(10)
+# xs, ys = generate_random_convex_polygon(10)
+
+n = 4
+radius = 200
+write_text_at(turtle, -400, 500, f"Random Convex Polygon of {n} Points on a Circle of Radius={radius}")
+xs, ys = generate_random_convex_polygon_on_circle(radius = radius, n = n)
 
 
 t = turtle.Turtle()
