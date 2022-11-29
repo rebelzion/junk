@@ -1,6 +1,4 @@
-from ipaddress import collapse_addresses
 from bs4 import BeautifulSoup
-import requests
 import datetime
 import re
 import time
@@ -10,6 +8,7 @@ import random
 from typing import List, Optional
 from enum import Enum
 import tqdm
+import pandas as pd
 
 
 class LEAGUE(Enum):
@@ -65,7 +64,8 @@ class BBCSoccerScraper:
                 date=f"{date.year}-{date.month:02d}-{date.day:02d}", league=league
             )
         else:
-            url = self._get_url(date=f"{date.year}-{date.month:02d}", league=league)
+            url = self._get_url(
+                date=f"{date.year}-{date.month:02d}", league=league)
         print(f"url: {url}")
 
         self.driver.get(url)
@@ -85,8 +85,25 @@ class BBCSoccerScraper:
     def scrape(self, date: datetime.datetime, league: str):
 
         soup = self._get_soup(date, league)
-        results = self._get_matches_date_half_and_fulltime_score(soup)
+        results = self._get_matches_date_half_and_fulltime_score(soup, date)
 
+        return results
+
+    def scrape_range(self, league: str, start_date: Optional[datetime.datetime] = None, end_date: Optional[datetime.datetime] = None, last_n_days: Optional[int] = None):
+
+        assert (start_date and end_date) or (
+            end_date and last_n_days), "You must provide either start_date and end_date or end_date and last_n_days"
+
+        if last_n_days is not None:
+            start_date = end_date - datetime.timedelta(days=last_n_days)
+
+        results = {}
+        for date in tqdm.tqdm(
+            pd.date_range(start_date, end_date), position=0, leave=True
+        ):
+            dt = date.to_pydatetime()
+            dt_str = dt.strftime("%Y-%m-%d")
+            results[dt_str] = self.scrape(date=dt, league=league)
         return results
 
     def _parse_score_events(self, score_events):
@@ -106,7 +123,8 @@ class BBCSoccerScraper:
                 events = events[0].split(", ")
                 for ev in events:
                     if "dismissed" not in ev.lower():
-                        score_ev = re.findall(r"(\d+)'(\+\d+)*\sminutes(\spen)*", ev)[0]
+                        score_ev = re.findall(
+                            r"(\d+)'(\+\d+)*\sminutes(\spen)*", ev)[0]
                         min = int(score_ev[0])
                         is_pen = score_ev[2] != ""
 
@@ -144,8 +162,10 @@ class BBCSoccerScraper:
             "event_by_player": events_by_player,
         }
 
-        stats["h1_goals"] = sum([ev["h1_goals"] for pl, ev in events_by_player.items()])
-        stats["h2_goals"] = sum([ev["h2_goals"] for pl, ev in events_by_player.items()])
+        stats["h1_goals"] = sum([ev["h1_goals"]
+                                for pl, ev in events_by_player.items()])
+        stats["h2_goals"] = sum([ev["h2_goals"]
+                                for pl, ev in events_by_player.items()])
         stats["total_goals"] = stats["h1_goals"] + stats["h2_goals"]
         stats["penalties_scored"] = sum(
             [ev["penalties_scored"] for pl, ev in events_by_player.items()]
