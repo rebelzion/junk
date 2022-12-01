@@ -2,9 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from typing import Tuple
 import argparse
+import os
 
-
-TEST = 0
 
 def build_url(year: int, day: int, type: str = "input") -> str:
     assert type in ["input", "answer"]
@@ -56,6 +55,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser("AOC CLI")
     parser.add_argument("--download_input", action="store_true")
     parser.add_argument("--submit_answer", action="store_true")
+    parser.add_argument("--working_directory", type=str, required=True)
     parser.add_argument("--year", '-y', type=int, default=2022)
     parser.add_argument("--day", '-d', type=int, required=True)
     parser.add_argument("--level", '-l', type=int, required=True)
@@ -73,4 +73,9 @@ if __name__ == '__main__':
         )
         print(f"{status=}\n{msg=}")
     elif args.download_input:
-        get_input(url=build_url(year=args.year, day=args.day))
+        if not os.path.exists(args.working_directory):
+            os.makedirs(args.working_directory, exist_ok=True)
+        get_input(
+            url=build_url(year=args.year, day=args.day),
+            output_fp = os.path.join(args.working_directory, "input.txt")
+        )
