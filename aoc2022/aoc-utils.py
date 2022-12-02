@@ -55,7 +55,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser("AOC CLI")
     parser.add_argument("--download_input", action="store_true")
     parser.add_argument("--submit_answer", action="store_true")
-    parser.add_argument("--working_directory", type=str, required=True)
+    parser.add_argument("--working_directory", type=str, default=None)
     parser.add_argument("--year", '-y', type=int, default=2022)
     parser.add_argument("--day", '-d', type=int, required=True)
     parser.add_argument("--level", '-l', type=int, required=True)
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         )
         print(f"{status=}\n{msg=}")
     elif args.download_input:
+        assert(args.working_directory), f"--working_directory can't be {working_directory}!"
         if not os.path.exists(args.working_directory):
             os.makedirs(args.working_directory, exist_ok=True)
         get_input(
