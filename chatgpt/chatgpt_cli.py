@@ -20,18 +20,7 @@ while True:
     chatgpt_client.send_message(inp)
     print(f"{Fore.YELLOW}[You]: " + inp)
 
-    while True:
-        responses = chatgpt_client.get_responses()
-        if responses and len(responses) > num_previous_responses:
-            num_previous_responses = len(responses)
-            time.sleep(4)
-            break
-        else:
-            time.sleep(1)
-
-    #waiting(nsec=2)
-
-    response = chatgpt_client.get_responses()[-1]
+    response = chatgpt_client.wait_for_response()
     print(f"{Fore.GREEN}[GPT]: " + response)
 
 
