@@ -66,6 +66,12 @@ def get_pairwise_distances(graph, node_ids):
         assert distances[(node_id, other_node_id)
                          ] == distances[(other_node_id, node_id)]
 
+    sorted_node_ids = sorted(node_ids)
+    for node_id in sorted_node_ids:
+        for other_node_id in sorted_node_ids:
+            print(f"{distances[(node_id, other_node_id)]:2}", end=' ')
+        print()
+
     return distances
 
 
@@ -79,19 +85,25 @@ def solve(graph: Dict[str, Valve], maxT: int, start_node: str):
     # for k, v in distances.items():
     #     print(f"{k} -> {v}")
 
-    print(valves_with_flow)
+    print(f"{valves_with_flow=}")
 
     q = Queue()
+    # pressure, node, time_elapsed, open_valves
     q.put((0, start_node, 0, set()))
     max_pressure = -1
+    results = []
     while not q.empty():
 
-        pressure, node, time_elapsed, open_valves = q.get()
+        state = q.get()
+        pressure, node, time_elapsed, open_valves  = state
         # print('node=', node, 'open_valves=', open_valves)
 
-        if time_elapsed >= maxT:
-            print(f"{pressure=}")
+        if time_elapsed > maxT:
+            continue
+
+        if time_elapsed == maxT:
             max_pressure = max(pressure, max_pressure)
+            results.append((pressure, open_valves))
             continue
 
         if node not in open_valves and node != start_node:
@@ -109,19 +121,18 @@ def solve(graph: Dict[str, Valve], maxT: int, start_node: str):
 
                     if time_elapsed_new <= maxT:
                         pressure_new = pressure + dt * \
-                            sum(graph[valve].flow_rate for valve in open_valves)
+                            sum(graph[v_].flow_rate for v_ in open_valves)
                         state_new = (
-                            pressure_new, valve, time_elapsed_new, open_valves.union({valve}))
+                            pressure_new, valve, time_elapsed_new, open_valves)
                         q.put(state_new)
                         moved_to_valve = True
             if not moved_to_valve:
                 time_elapsed_new = time_elapsed + 1
-                if time_elapsed_new > maxT:
-                    continue
-                pressure_new = pressure + \
-                    sum(graph[valve].flow_rate for valve in open_valves)
-                state_new = (pressure_new, node, time_elapsed_new, open_valves)
-                q.put(state_new)
+                if time_elapsed_new <= maxT:
+                    pressure_new = pressure + \
+                        sum(graph[valve].flow_rate for valve in open_valves)
+                    state_new = (pressure_new, node, time_elapsed_new, open_valves)
+                    q.put(state_new)
 
     return max_pressure
 
